@@ -7,9 +7,12 @@ Note the relative link starting with a slash before the html file.
 The index.md is used to customize the github page's home page, 
 The following link directs to the slide.
 
-Code: `[slide link](/STOCfree_model_tutorial.html)`
+Introduction: `[link1](/STOCfree_model_description.pdf)`
+
+Tutorial: `[slide link](/STOCfree_model_tutorial.html)`
 
 Result:
+[link1](/STOCfree_model_description.pdf)
 
 [slide link](/STOCfree_model_tutorial.html)
 
@@ -20,7 +23,7 @@ Or you could embed the xaringan slide into a webpage using iframe:
 
 Code:
 
-​```
+```
 ## CSS styles
 <style>
 .resp-container {
@@ -48,7 +51,7 @@ Code:
     </iframe>
 </div>
 
-​```
+```
 
 Result:
 
