@@ -1,27 +1,11 @@
-## Test
+## Link to the tutorial on the STOC free model
 
-### Link
+Code: `[STOC free model tutorial](/STOCfree_model_tutorial.html)`
 
-Note the relative link starting with a slash before the html file.
-
-The index.md is used to customize the github page's home page, 
-The following link directs to the slide.
-
-Introduction: `[link1](/STOCfree_model_description.pdf)`
-
-Tutorial: `[slide link](/STOCfree_model_tutorial.html)`
-
-Result:
-[link1](/STOCfree_model_description.pdf)
-
-[slide link](/STOCfree_model_tutorial.html)
+Link: [STOC free model tutorial](/STOCfree_model_tutorial.html)
 
 
-### Embed
-
-Or you could embed the xaringan slide into a webpage using iframe:
-
-Code:
+## Slides
 
 ```
 ## CSS styles
@@ -46,34 +30,8 @@ Code:
 ## html iframe to embed the slide.
 
 <div class="resp-container">
-    <iframe class="testiframe" src="https://tcgriffith.github.io/xaringan_theme_example/use_master.html">
+    <iframe class="testiframe" src="https://aurmad.github.io/STOCfree_model_tutorial/STOCfree_model_tutorial.html">
       Fallback text here for unsupporting browsers, of which there are scant few.
     </iframe>
 </div>
-
 ```
-
-Result:
-
-<style>
-.resp-container {
-    position: relative;
-    overflow: hidden;
-    padding-top: 56.25%;
-}
-
-.testiframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-</style>
-
-<div class="resp-container">
-    <iframe class="testiframe" src="https://tcgriffith.github.io/xaringan_gh/xaringan_example.html">
-      Fallback text here for unsupporting browsers, of which there are scant few.
-    </iframe>
-</div>

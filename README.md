@@ -1,7 +1,5 @@
-This page contains:
+This page contains documents that document the STOC free model.
 
-* a description of the STOC free model in the **01_model_description** folder
-* a tutorial in the **02_tutorial** folder
+- [The STOC free model: objectives, hypotheses and model overview](https://github.com/AurMad/STOCfree_model_tutorial/raw/main/STOCfree_model_description.pdf). Clicking on this link will download of a pdf file on your computer.
 
-see: ./02_tutorial/STOCfree_model_tutorial.html
-
+- [A tutorial on the STOC free model](https://aurmad.github.io/STOCfree_model_tutorial/STOCfree_model_tutorial.html#1). Link to an html presentation.
