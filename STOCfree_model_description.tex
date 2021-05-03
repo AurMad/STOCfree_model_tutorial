@@ -24,7 +24,7 @@
 
 \title{The STOC free model}
 \subtitle{Objectives, hypotheses and model overview}
-\author{Aurélien Madouasse \\\& \\the STOC free consortium}
+\author[Madouasse \textit{et al.}]{Aurélien Madouasse \texorpdfstring{\\}{}\& \texorpdfstring{\\}{}the STOC free consortium}
 \institute{\url{https://www.stocfree.eu/}}
 
 %\titlegraphic{\includegraphics[width=\textwidth]{imgs/title_page_bg.png}}
@@ -624,6 +624,13 @@ $$p(\theta | y) \propto  p(y|\theta) p(\theta)$$
 \end{itemize}
 \end{frame}
 
+
+
+
+
+
+
+
 \begin{frame}[fragile]
 \frametitle{JAGS model}
 \framesubtitle{First status}
@@ -755,6 +762,235 @@ model{
 \end{itemize}
 \end{frame}
 
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Declaration of variables}
+\scriptsize
+\begin{verbatim}
+data{
+
+  int<lower=1> n_herds;
+  int<lower=1> herds_t1[n_herds];
+  int<lower=1> herds_t2[n_herds];
+  int<lower=1> herds_T[n_herds];
+  int<lower=1> N;
+  int<lower=0, upper=3> test_res[N];
+  real<lower = 0> Se_beta_a;
+  real<lower = 0> Se_beta_b;
+  real<lower = 0> Sp_beta_a;
+  real<lower = 0> Sp_beta_b;
+  real logit_pi1_mean;
+  real logit_pi1_sd;
+  real logit_tau2_mean;
+  real logit_tau2_sd;
+  int<lower = 0> n_risk_factors;
+  real theta_norm_mean[n_risk_factors];
+  real theta_norm_sd[n_risk_factors];
+  matrix[N, n_risk_factors] risk_factors;
+
+}
+\end{verbatim}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Parameters}
+\scriptsize
+\begin{verbatim}
+parameters{
+
+  real<lower = 0, upper = 1> Se;
+  real<lower = 0, upper = 1> Sp;
+  real<lower = 0, upper = 1> pi1;
+  real<lower = 0, upper = 1> tau2;
+  vector[n_risk_factors] theta;
+
+}
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Transformed parameters}
+\scriptsize
+\begin{verbatim}
+transformed parameters{
+
+  // logalpha needs to be accessible to other blocks
+  matrix[N, 2] logalpha;
+
+  {
+
+    // accumulator used at each time step
+    real tau1[N];
+    real accumulator[2];
+
+    // logistic regression for tau1
+  for(n in 1:N){
+
+  tau1[n] = inv_logit(risk_factors[n,] * theta);
+
+  }
+\end{verbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{First status}
+\scriptsize
+\begin{verbatim}
+    // looping over all herds
+    for(h in 1:n_herds){
+
+      // first test in sequence
+      // negative status
+      logalpha[herds_t1[h], 1] = log(1 - pi1) + 
+                      bernoulli_lpmf(test_res[herds_t1[h]] | 1 - Sp);
+      // positive status
+      logalpha[herds_t1[h], 2] = log(pi1) + 
+                      bernoulli_lpmf(test_res[herds_t1[h]] | Se);
+
+ \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Status transition / no test result}
+\scriptsize
+\begin{verbatim}
+// tests 2 in T in sequence
+  for(t in herds_t2[h]:herds_T[h]){
+
+// Missing test result     
+     if(test_res[t] == 3){
+
+// transition from status negative to status negative (j = 1; i = 1)
+     accumulator[1] = logalpha[t-1, 1] + log(1 - tau1[t]);
+// transition from status positive to status negative (j = 1; i = 1)
+     accumulator[2] = logalpha[t-1, 2] + log(1 - tau2);
+
+     logalpha[t, 1] = log_sum_exp(accumulator);
+
+// transition from status negative to status negative (j = 1; i = 1)
+     accumulator[1] = logalpha[t-1, 1] + log(tau1[t]);
+// transition from status positive to status positive (j = 1; i = 1)
+     accumulator[2] = logalpha[t-1, 2] + log(tau2);
+
+     logalpha[t, 2] = log_sum_exp(accumulator);
+
+    } else {
+ \end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Status transition / test result}
+\scriptsize
+\begin{verbatim}
+// transition from status negative to status negative (j = 1; i = 1)
+    accumulator[1] = logalpha[t-1, 1] + 
+                     log(1 - tau1[t]) + 
+                     bernoulli_lpmf(test_res[t] | 1 - Sp);
+// transition from status positive to status negative (j = 1; i = 1)
+    accumulator[2] = logalpha[t-1, 2] + 
+                     log(1 - tau2) + 
+                     bernoulli_lpmf(test_res[t] | 1 - Sp);
+
+    logalpha[t, 1] = log_sum_exp(accumulator);
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Status transition / test result}
+\scriptsize
+\begin{verbatim}
+// transition from status negative to status negative (j = 1; i = 1)
+   accumulator[1] = logalpha[t-1, 1] + 
+                    log(tau1[t]) + 
+                    bernoulli_lpmf(test_res[t] | Se);
+// transition from status positive to status positive (j = 1; i = 1)
+   accumulator[2] = logalpha[t-1, 2] + 
+                    log(tau2) + 
+                    bernoulli_lpmf(test_res[t] | Se);
+
+   logalpha[t, 2] = log_sum_exp(accumulator);
+
+       } // if
+
+     } // time sequence loop
+
+    } // herd loop
+
+  } //local
+
+} // end of block
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Priors and likelihood}
+\scriptsize
+\begin{verbatim}
+model{
+
+// priors for test characteristics
+     Se ~ beta(Se_beta_a, Se_beta_b);
+     Sp ~ beta(Sp_beta_a, Sp_beta_b);
+
+// priors for status dynamics
+  logit(pi1) ~ normal(logit_pi1_mean, logit_pi1_sd);
+  logit(tau2) ~ normal(logit_tau2_mean, logit_tau2_sd);
+
+// priors for the logistic regression coefficients
+  for(k in 1:n_risk_factors){
+
+  theta[k] ~ normal(theta_norm_mean[k], theta_norm_sd[k]);
+
+  }
+
+// update based only on last logalpha of each herd
+  for(i in 1:n_herds)
+    target += log_sum_exp(logalpha[herds_T[i]]);
+
+}
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Stan model}
+\framesubtitle{Predicted status}
+\scriptsize
+\begin{verbatim}
+generated quantities{
+
+  // variable in which predictions are stored
+  real pred[n_herds];
+
+  {
+    matrix[n_herds, 2] alpha;
+
+  // loop in which the probabilities of infection are predicted
+    for(i in 1:n_herds){
+      alpha[i] = softmax(logalpha[herds_T[i],]')';
+      pred[i] = alpha[i, 2];
+    }
+  }
+}
+\end{verbatim}
+\end{frame}
+
+
 \subsection[JAGS vs. Stan]{Comparison of the JAGS and Stan implementations}
 
 \begin{frame}
@@ -774,10 +1010,10 @@ model{
 \end{itemize}
 \end{frame}
 
-\subsection{The STOCfree package}
+\subsection{\texttt{STOCfree} package}
 
 \begin{frame}
-\frametitle{The STOCfree R package}
+\frametitle{The \texttt{STOCfree} R package}
 \framesubtitle{What is an R package?}
 \begin{itemize}
 \item[]{\includegraphics[width=.07\textwidth]{imgs/Rlogo.png}}
@@ -796,12 +1032,12 @@ model{
 \end{frame}
 
 \begin{frame}
-\frametitle{The STOCfree R package}
+\frametitle{The \texttt{STOCfree} R package}
 \includegraphics[width=\textwidth]{imgs/STOCfree_package.png}
 \end{frame}
 
 \begin{frame}
-\frametitle{The STOCfree R package on Github}
+\frametitle{The \texttt{STOCfree} R package on Github}
 \begin{itemize}
  \item{The package is hosted on Github}
  \url{https://github.com/AurMad/STOCfree}
