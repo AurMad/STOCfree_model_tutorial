@@ -267,7 +267,7 @@ $$p(T_t = 1) = \begin{cases*} 1 - Sp &if $S_{t}=0$ \\
 
 \begin{itemize}
  \item{The model predicts a herd level probability of being status positive at time $T$}
- \item{All the data available up to $T$ are used for paremeter estimation}
+ \item{All the data available up to $T$ are used for parameter estimation}
 \end{itemize}
 \vspace{.5cm}
 \center
@@ -311,704 +311,26 @@ $$p(T_t) = \begin{cases*} 1 - Sp &if $S_t = 0$ \\
 \end{frame}
 
 
-\section[Estimation \& prediction]{Parameter estimation and status prediction}
-\begin{frame}
-\frametitle{Table of Contents}
-  \tableofcontents[currentsection]
-\end{frame} 
-
-
-\begin{frame}
-\frametitle{Data, hypotheses and parameters}
-\begin{itemize}
- \item{Data: test results, risk factors}
- \item{What we need to know: probability of infection on the current month}
- \item{What we know (more or less): test characteristics, characteristics of infection dynamics $\ldots$}
- \item{The modelling framework needs to be able to predict herd level probabilities of infection from test results and knowledge about test characteristics}
- \item{Chosen approach: Bayesian inference}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\begin{itemize}
- \item{What is a conditional probability?}
- \begin{itemize}
-  \item{Probability of an event given that another event has already happened}
- \end{itemize}
-  \medskip
-  \item[]{\textbf{Sensitivity} = probability of a positive test result ($T^+$) given that ($|$) an individual is diseased ($D^+$)}
-$$Se = p(T^+|D^+)$$
-  \item[]{\textbf{Positive predictive value} = probability that an individual is diseased given a positive test result}
-  $$PPV = p(D^+|T^+)$$
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\begin{itemize}
- \item{What is Bayes’ theorem?}
- \begin{itemize}
-  \item{A simple formula that relates $p(B|A)$ to $p(A|B)$}
- \end{itemize}
-\end{itemize}
-\vspace{1.5cm}
-\huge
-$$p(B|A)=\frac{p(A|B)p(B)}{p(A)}$$
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\begin{itemize}
- \item{Bayes’ theorem applied to determining the probability of disease given a positive test result}
- \begin{itemize}
-  \item{Usually we know test sensitivity, and we would like to know the probability that disease is present given test result}
- \end{itemize}
-\end{itemize}
-\vspace{1cm}
-\begin{large}
-$$p(D^+|T^+)=\frac{p(T^+|D+)p(D^+)}{p(T^+)}$$
-\end{large}
-\begin{itemize}
- \item[-]{$p(D^+|T^+)$: Positive predictive value}
- \item[-]{$p(T^+|D+)$: Test sensitivity}
- \item[-]{$p(D^+)$: Disease prevalence}
- \item[-]{$p(T^+)$: Probability of a positive test}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\begin{itemize}
- \item{Bayes’ theorem applied to determining the probability of disease given a positive test result}
-\end{itemize}
-\vspace{.5cm}
-$$p(D^+|T^+)=\frac{p(T^+|D+)p(D^+)}{p(T^+)}$$
-\pause
-\vspace{.5cm}
-$$p(D^+|T^+)=\frac{p(T^+|D+)p(D^+)}{p(T^+|D+)p(D^+)+p(T^+|D^-)p(D^-)}$$
-\pause
-\vspace{.5cm}
-$$p(D^+|T^+)=\frac{Se \pi}{Se \pi + (1-Sp)(1-\pi)}$$
-\end{frame}
-
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\framesubtitle{Bayes’ theorem applied to statistical inference}
- \begin{itemize}
-  \item{We have some data ($y$) and a model, we would like to know what is the probability of the model parameter ($\theta$) values given these data}
- \end{itemize}
-\begin{large}
-$$p(\theta|y)=\frac{p(y|\theta)p(\theta)}{p(y)}$$
-\end{large}
-\begin{itemize}
- \item[$p(\theta|y)$]{Probability of parameters given data $\rightarrow$ \textbf{Posterior distribution}}
- \item[$p(y|\theta)$]{Probability of data given parameters $\rightarrow$ \textbf{Likelihood function}}
- \item[$p(\theta)$]{Parameter prior distributions$\rightarrow$ \textbf{priors}}
- \item[$p(y)$]{\textbf{Normalising constant}}
- \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\framesubtitle{Bayes’ theorem applied to statistical inference}
- \begin{itemize}
-  \item{Bayesian inference is a way to estimate model parameters incorporating:}
- \begin{itemize}
-  \item{data}
-  \item{prior knowledge/hypotheses about the model parameters}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\framesubtitle{Bayes’ theorem applied to statistical inference}
-\begin{itemize}
- \item{The normalising constant $p(y)$:}
- \begin{itemize}
-  \item{is an integral that cannot be readily computed, except in simple cases}
-  \item{makes the area under the posterior density curve sum to 1}
-  \item{is a constant}
- \end{itemize}
-\end{itemize}
-\vspace{.5cm}
-\Large
-$$p(y)=\int p(y|\theta)p(\theta)d\theta$$
-\end{frame}
-
-\begin{frame}
-\frametitle{Bayes’ theorem}
-\framesubtitle{Bayes’ theorem applied to statistical inference}
-\begin{itemize}
- \item{Because in most cases the normalising constant cannot be computed, we need estimation methods that do no need to compute it for the estimation of the full posterior density}
-\end{itemize}
-\vspace{.5cm}
-\begin{Large}
-$$p(\theta | y) \propto  p(y|\theta) p(\theta)$$
-\end{Large}
-\begin{itemize}
- \item{Solution: draw many samples from likelihood x prior distribution using Markov Chain Monte Carlo}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\begin{itemize}
- \item{\textbf{Monte Carlo}: draw random samples ($\theta$) from statistical distributions}
- \item{\textbf{Markov Chain}: the next random values drawn depend on the values of the current ones}
-\end{itemize}
-\begin{Large}
-$$p(\theta | y) \propto  p(y|\theta) p(\theta)$$
-\end{Large}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Principles of MCMC algorithms}
- \begin{itemize}
-  \item{Start with some random initial values ($t=1$)}
-  \item{Use values at current iteration to sample values at next iteration (Markovian transition)}
-  \item{The Markov Chain is constructed in such a way that it moves towards the target posterior probability distribution}
-  \item{There is no way to be absolutely sure that the samples come from the target distribution}
-  \begin{itemize}
-   \item{First iterations discarded $\Rightarrow$ burn in or warmup}
-   \item{Different simulations are run in parallel $\Rightarrow$ chains}
-  \end{itemize}
- \end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Convergence}
-\begin{itemize}
- \item{Moving towards the target distribution}
-\end{itemize}
-\includegraphics[width=\textwidth]{imgs/convergence.png}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Convergence}
-\begin{itemize}
- \item{All chains should converge to the same distribution $\rightarrow$ traceplot}
-\end{itemize}
-\includegraphics[width=\textwidth]{imgs/traceplot.png}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Convergence}
-\begin{itemize}
- \item{Different chains can converge to different distributions}
- \begin{itemize}
-  \item{Model with 5 parameters / each color is a chain}
- \end{itemize}
-\end{itemize}
-\includegraphics[width=\textwidth]{imgs/Stan_fail_1.png}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Autocorrelation}
-\begin{itemize}
- \item{Autocorrelation: within a chain, high correlation between consecutive MCMC samples}
-\end{itemize}
-\includegraphics[width=\textwidth]{imgs/autocorrelation.png}
-
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{in pratcice}
-\begin{itemize}
- \item{Run several chains ($> 2$): allows checking that the samples obtained do not come from different distributions = convergence (traceplots , Gelman Rubin statistic)}
- \item{Initialise each chain with different values}
- \item{Discard the first $n$ iterations = burn in, warmup}
- \item{If autocorrelation, use 1 out of $k$ iterations (depending on autocorrelation) = thinning}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Algorithms}
-\begin{itemize}
-  \item{There exist many different MCMC algorithms:}
- \begin{itemize}
-  \item{Metropolis: first invented (1953)}
-  \item[]{\scriptsize See an introduction here: \href{https:youtu.be/U561HGMWjcw}{Ben Lambert - An introduction to the Random Walk Metropolis algorithm}}
-  \item{Metropolis Hastings}
-  \item{Gibbs sampling: BUGS, WinBUGS, JAGS}
- \item{Hamiltonian Monte Carlo: Stan}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Gibbs sampling}
-\begin{itemize}
- \item{First widely used algorithm for Bayesian inference}
- \begin{itemize}
- \item{Not possible before the 1990s because computation intensive}
- \item{First implementations:}
-  \begin{itemize}
-   \item{BUGS = Bayesian Inference Using Gibbs Sampling}
-   \item{WinBUGS , OpenBUGS}
-  \end{itemize}
- \item{Most recent implementations}
-  \begin{itemize}
-   \item{\href{https://sourceforge.net/projects/mcmc-jags/files/}{JAGS}: Just Another Gibbs Sampler}
-   \item{MultiBUGS}
-   \item[$\Rightarrow$]{Same principles, more efficient}
-  \end{itemize}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Gibbs sampling}
-\begin{itemize}
- \item{All the programmes use the same language to code statistical models}
- \item{Easy to write the code from model specification}
- \item{Straightforward to translate the STOC free model equations into code}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{Hamiltonian Monte Carlo}
-\begin{itemize}
- \item{Implemented in \href{https://mc-stan.org}{Stan}}
- \item{Much more efficient than Gibbs sampling}
- \begin{itemize}
-  \item{Exploration of the posterior distribution much more efficient}
-  \item{Less autocorrelation $\rightarrow$ requires less iterations}
- \end{itemize}
- \item{Does not support latent discrete parameters}
- \begin{itemize}
-  \item{Not possible to code the STOC free model as simply as in JAGS}
- \end{itemize}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Markov Chain Monte Carlo}
-\framesubtitle{}
-
-\begin{itemize}
- \item{For a visual comparison of different MCMC algorithms, see: \href{http://chi-feng.github.io/mcmc-demo/}{The Markov-chain Monte Carlo Interactive Gallery by Chi-Feng}}
-\end{itemize}
-\end{frame}
-
 \section{Implementation}
+
 \begin{frame}
 \frametitle{Table of Contents}
   \tableofcontents[currentsection]
 \end{frame} 
 
-\subsection[JAGS]{The STOC free model in JAGS}
+\subsection{Overview}
 
 \begin{frame}
-\frametitle{JAGS model}
+\frametitle{Model implementation}
 \begin{itemize}
- \item{Easy to go from model equations to JAGS code}
- \item{On the following slides:}
- \begin{itemize}
-  \item{Simplified version in which test results assumed available for all months}
-  \item{The \emph{real} model allows for missing test results with a complicated system of loops. Same idea but harder to read}
-  \item{When no test available, the dynamics drive status evolution}
+ \item{Parameter estimation and prediction carried out in a Bayesian framework}
+\begin{itemize}
+ \item{The framework permits the incorporation of available knowledge using prior distributions}
+ \item{Two different programmes can be used to run the model: \href{https://sourceforge.net/projects/mcmc-jags/files/}{JAGS} or \href{https://mc-stan.org}{Stan}}
  \end{itemize}
 \end{itemize}
 \end{frame}
 
-
-
-
-
-
-
-
-\begin{frame}[fragile]
-\frametitle{JAGS model}
-\framesubtitle{First status}
-\scriptsize
-\begin{verbatim}
-model{
-  ## loop over all herds
-  ## t1 is the vector of indices for first month of test in each herd
-  ## t2 is the vector of indices for second month of test in each herd
-  ## tf is the vector of indices for last month of test in each herd
-  for(i in 1:N_herds){
-    
-    ### First monthly status of each herd
-    ## probability of being latent status positive for herd i at t1
-    logit_pi1[i] ~ dnorm(logit_pi1_mean, logit_pi1_prec)
-    
-    ## latent status for herd i at time = 1
-    Status[t1[i]] ~ dbern(ilogit(logit_pi1[i]))
-  
-    ## probability of being test positive given herd status
-    p_test_pos[t1[i]] <- Se * Status[t1[i]] + 
-                         (1 - Sp) * (1 - Status[t1[i]])
-    
-    ## test result associated with first Status => data
-    test_res[t1[i]] ~ dbern(p_test_pos[t1[i]])
-...    
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{JAGS model}
-\framesubtitle{Statuses 2 to last - 1}
-\scriptsize
-\begin{verbatim}
-    ### Statuses 2 to  1 minus last
-    for(t in (t1[i] + 1):(tf[i] - 1)){
-      
-      # probability of new infection
-      # logistic regression
-      logit(tau1[t]) <- inprod(risk_factors[t,], theta)
-      
-      ## probability of being status positive given previous status,
-      ## tau1 and tau2
-      pi[t] <- (1 - Status[t - 1]) * tau1[t] +
-                Status[t - 1] * tau2
-      
-      ## herd status at time t
-      Status[t] ~ dbern(pi[t])
-      
-      ## probability of test positive at time t
-      p_test_pos[t] <- Se * Status[t] + (1 - Sp) * (1 - Status[t])
-      
-      ## test result at time t  => data
-      test_res[t] ~ dbern(p_test_pos[t])
-      
-    }
- \end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{JAGS model}
-\framesubtitle{Predicted statuses}
-\scriptsize
-\begin{verbatim}
-    # probability of new infection
-    logit(tau1[tf[i]]) <- inprod(risk_factors[tf[i],], theta)
-    
-    ## Predicted probability of infection for herd i on last month
-    pi[tf[i]] <- tau1 * (1 - Status[tf[i] - 1]) + 
-                 tau2 * Status[tf[i] - 1]
-    # probability of infection updated with test result
-    predicted_proba[tf[i]] <- test_res[tf[i]] * (  
-      Se * pi[tf[i]] / (Se * pi[tf[i]] + (1 - Sp) * (1 - pi[tf[i]]))
-    ) + (1 - test_res[tf[i]]) * (                  
-        (1 - Se) * test_res[tf[i]] /
-          ((1 - Se) * pi[tf[i]]  + Sp * (1 - pi[tf[i]] ) )
-      )
-    
-  }
-\end{verbatim}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{JAGS model}
-\framesubtitle{Priors}
-\scriptsize
-\begin{verbatim}
-  ### Priors
-  ## test characteristics
-  Se ~ dbeta(Se_beta_a, Se_beta_b)
-  Sp ~ dbeta(Sp_beta_a, Sp_beta_b)
-
-  ## Status dynamics - sampling on the logit scale
-  logit_tau2 ~ dnorm(logit_tau2_mean, logit_tau2_prec)
-
-  ## logit back to the probability scale
-  tau2 <- ilogit(logit_tau2)
-  
-  ## Logistic regression coefficients
-  for(i_rf in 1:n_risk_factors){
-    
-    theta[i_rf] ~ dnorm(theta_norm_mean[i_rf], theta_norm_prec[i_rf])
-    
-  }
-  
-  }
-\end{verbatim}
-\end{frame}
-
-
-\subsection[Stan]{The STOC free model in Stan}
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\begin{itemize}
- \item{Stan implements Hamiltonian Monte Carlo which is expected to be more efficient at sampling from the full posterior distribution}
- \item{Stan does not support latent discrete parameters}
- \item{Translation of the model’s equations not as easy as with JAGS}
- \item{Various HMM implementations in Stan described in a tutorial by \href{https://github.com/luisdamiano/stancon18}{Damiano et al. (2017)}}
-\end{itemize}
-\end{frame}
-
-\begin{frame}
-\frametitle{Stan model}
-\begin{itemize}
- \item{Forward algorithm adapted from the tutorial}
- \item{Same model as the JAGS version, but estimation performed in a different way}
-\end{itemize}
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Declaration of variables}
-\scriptsize
-\begin{verbatim}
-data{
-
-  int<lower=1> n_herds;
-  int<lower=1> herds_t1[n_herds];
-  int<lower=1> herds_t2[n_herds];
-  int<lower=1> herds_T[n_herds];
-  int<lower=1> N;
-  int<lower=0, upper=3> test_res[N];
-  real<lower = 0> Se_beta_a;
-  real<lower = 0> Se_beta_b;
-  real<lower = 0> Sp_beta_a;
-  real<lower = 0> Sp_beta_b;
-  real logit_pi1_mean;
-  real logit_pi1_sd;
-  real logit_tau2_mean;
-  real logit_tau2_sd;
-  int<lower = 0> n_risk_factors;
-  real theta_norm_mean[n_risk_factors];
-  real theta_norm_sd[n_risk_factors];
-  matrix[N, n_risk_factors] risk_factors;
-
-}
-\end{verbatim}
-\end{frame}
-
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Parameters}
-\scriptsize
-\begin{verbatim}
-parameters{
-
-  real<lower = 0, upper = 1> Se;
-  real<lower = 0, upper = 1> Sp;
-  real<lower = 0, upper = 1> pi1;
-  real<lower = 0, upper = 1> tau2;
-  vector[n_risk_factors] theta;
-
-}
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Transformed parameters}
-\scriptsize
-\begin{verbatim}
-transformed parameters{
-
-  // logalpha needs to be accessible to other blocks
-  matrix[N, 2] logalpha;
-
-  {
-
-    // accumulator used at each time step
-    real tau1[N];
-    real accumulator[2];
-
-    // logistic regression for tau1
-  for(n in 1:N){
-
-  tau1[n] = inv_logit(risk_factors[n,] * theta);
-
-  }
-\end{verbatim}
-
-\end{frame}
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{First status}
-\scriptsize
-\begin{verbatim}
-    // looping over all herds
-    for(h in 1:n_herds){
-
-      // first test in sequence
-      // negative status
-      logalpha[herds_t1[h], 1] = log(1 - pi1) + 
-                      bernoulli_lpmf(test_res[herds_t1[h]] | 1 - Sp);
-      // positive status
-      logalpha[herds_t1[h], 2] = log(pi1) + 
-                      bernoulli_lpmf(test_res[herds_t1[h]] | Se);
-
- \end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Status transition / no test result}
-\scriptsize
-\begin{verbatim}
-// tests 2 in T in sequence
-  for(t in herds_t2[h]:herds_T[h]){
-
-// Missing test result     
-     if(test_res[t] == 3){
-
-// transition from status negative to status negative (j = 1; i = 1)
-     accumulator[1] = logalpha[t-1, 1] + log(1 - tau1[t]);
-// transition from status positive to status negative (j = 1; i = 1)
-     accumulator[2] = logalpha[t-1, 2] + log(1 - tau2);
-
-     logalpha[t, 1] = log_sum_exp(accumulator);
-
-// transition from status negative to status negative (j = 1; i = 1)
-     accumulator[1] = logalpha[t-1, 1] + log(tau1[t]);
-// transition from status positive to status positive (j = 1; i = 1)
-     accumulator[2] = logalpha[t-1, 2] + log(tau2);
-
-     logalpha[t, 2] = log_sum_exp(accumulator);
-
-    } else {
- \end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Status transition / test result}
-\scriptsize
-\begin{verbatim}
-// transition from status negative to status negative (j = 1; i = 1)
-    accumulator[1] = logalpha[t-1, 1] + 
-                     log(1 - tau1[t]) + 
-                     bernoulli_lpmf(test_res[t] | 1 - Sp);
-// transition from status positive to status negative (j = 1; i = 1)
-    accumulator[2] = logalpha[t-1, 2] + 
-                     log(1 - tau2) + 
-                     bernoulli_lpmf(test_res[t] | 1 - Sp);
-
-    logalpha[t, 1] = log_sum_exp(accumulator);
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Status transition / test result}
-\scriptsize
-\begin{verbatim}
-// transition from status negative to status negative (j = 1; i = 1)
-   accumulator[1] = logalpha[t-1, 1] + 
-                    log(tau1[t]) + 
-                    bernoulli_lpmf(test_res[t] | Se);
-// transition from status positive to status positive (j = 1; i = 1)
-   accumulator[2] = logalpha[t-1, 2] + 
-                    log(tau2) + 
-                    bernoulli_lpmf(test_res[t] | Se);
-
-   logalpha[t, 2] = log_sum_exp(accumulator);
-
-       } // if
-
-     } // time sequence loop
-
-    } // herd loop
-
-  } //local
-
-} // end of block
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Priors and likelihood}
-\scriptsize
-\begin{verbatim}
-model{
-
-// priors for test characteristics
-     Se ~ beta(Se_beta_a, Se_beta_b);
-     Sp ~ beta(Sp_beta_a, Sp_beta_b);
-
-// priors for status dynamics
-  logit(pi1) ~ normal(logit_pi1_mean, logit_pi1_sd);
-  logit(tau2) ~ normal(logit_tau2_mean, logit_tau2_sd);
-
-// priors for the logistic regression coefficients
-  for(k in 1:n_risk_factors){
-
-  theta[k] ~ normal(theta_norm_mean[k], theta_norm_sd[k]);
-
-  }
-
-// update based only on last logalpha of each herd
-  for(i in 1:n_herds)
-    target += log_sum_exp(logalpha[herds_T[i]]);
-
-}
-\end{verbatim}
-\end{frame}
-
-
-\begin{frame}[fragile]
-\frametitle{Stan model}
-\framesubtitle{Predicted status}
-\scriptsize
-\begin{verbatim}
-generated quantities{
-
-  // variable in which predictions are stored
-  real pred[n_herds];
-
-  {
-    matrix[n_herds, 2] alpha;
-
-  // loop in which the probabilities of infection are predicted
-    for(i in 1:n_herds){
-      alpha[i] = softmax(logalpha[herds_T[i],]')';
-      pred[i] = alpha[i, 2];
-    }
-  }
-}
-\end{verbatim}
-\end{frame}
-
-
-\subsection[JAGS vs. Stan]{Comparison of the JAGS and Stan implementations}
-
-\begin{frame}
-\frametitle{Comparison of the JAGS and Stan implementations}
-\begin{itemize}
- \item{The JAGS and Stan implementations of the model were compared using data collected as part of BVDV control programme in France}
- \begin{itemize}
-  \item{Work under review with \href{https://animsci.peercommunityin.org/}{PCI Animal Science}, available as a \href{https://www.biorxiv.org/content/10.1101/2020.07.10.197426v4.full}{pre-print}.}
- \end{itemize}
- \item{The Stan implementation:}
- \begin{itemize}
-  \item{gives the same parameter estimates}
-  \item{is much faster}
-  \item{converges much better}
-  \item{returns predicted probabilities of infection that are easier to interpret}
- \end{itemize}
-\end{itemize}
-\end{frame}
 
 \subsection{\texttt{STOCfree} package}
 
@@ -1064,6 +386,168 @@ generated quantities{
  \item{The documentation is at the bottom of the page}
 \end{itemize}
 \includegraphics[width=.9\textwidth]{imgs/STOCfree_Github_1.png}
+\end{frame}
+
+
+\section[Application]{Application to the surveillance of BVDV infection in Loire-Atlantique (France)}
+
+\begin{frame}
+\frametitle{Table of Contents}
+  \tableofcontents[currentsection]
+\end{frame} 
+
+\subsection{Data}
+
+\begin{frame}
+\frametitle{Data}
+\begin{itemize}
+ \item{Surveillance data collected as part of a dairy cattle BVD control programme in Loire-Atlantique (France)}
+ \begin{itemize}
+  \item{All herds tested every 6 months}
+  \item{Antibody ELISA on bulk tank milk}
+  \item{Data from 1 687 herds between 2014 and 2017}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Data}
+\includegraphics[width=\textwidth]{imgs/distribution_of_test_dates.pdf}
+\end{frame}
+
+\subsection{Modelling}
+
+\begin{frame}
+\frametitle{Models}
+\begin{itemize}
+ \item{Four different models incorporating different hypotheses were run in both Stan and JAGS and the results compared}
+ \begin{itemize}
+  \item{\textbf{Model 1:} Perfect test, no risk factors}
+  \item{\textbf{Model 2:} Imperfect test, no risk factors}
+  \item{\textbf{Model 3:} Perfect test, risk factors}
+  \item{\textbf{Model 4:} Imperfect test, risk factors}
+ \end{itemize}
+ \item<2->{Risk factors}
+ \begin{itemize}
+  \item{Two considered: number of cattle introduced, local seroprevalence}
+  \item{Only number of cattle introduced retained in the final model}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Prior distributions}
+\framesubtitle{Perfect test}
+\includegraphics[width=\textwidth]{imgs/priors_perfect_test.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Prior distributions}
+\framesubtitle{Imperfect test}
+\includegraphics[width=\textwidth]{imgs/priors_imperfect_test.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Prior distributions}
+\framesubtitle{Risk factors: intercept and coefficient}
+\includegraphics[width=\textwidth]{imgs/priors_thetas.pdf}
+\end{frame}
+
+\subsection{Results}
+
+\begin{frame}
+\frametitle{Model convergence}
+\begin{itemize}
+ \item{Convergence much better with the Stan version of the model, especially with imperfect test}
+\end{itemize}
+\includegraphics[width=\textwidth]{imgs/traceplots.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Parameter estimates}
+\framesubtitle{Test characteristics}
+\includegraphics[width=\textwidth]{imgs/model_densities_1.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Parameter estimates}
+\framesubtitle{Infection dynamics}
+\includegraphics[width=\textwidth]{imgs/model_densities_2.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Parameter estimates}
+\framesubtitle{Risk factors of new infection}
+\includegraphics[width=\textwidth]{imgs/model_densities_3.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{Parameter estimates}
+\begin{itemize}
+\item{Estimates consistent between JAGS and Stan}
+\item{Posterior distributions much narrower and sometimes far from the prior distributions}
+\item{The number of cattle introduced increases the probability of infection $\Rightarrow$ increase in the sensitivity of detection}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Predicted probabilities of infection}
+\begin{itemize}
+ \item{Predicted for:}
+ \begin{itemize}
+ \item{all herds}
+ \item{the last month in which a test result was available (October 2016)}
+ \end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Predicted probabilities of infection}
+\framesubtitle{Overall posterior distributions}
+\centering
+\includegraphics[width=.72\textwidth]{imgs/plot_predicted_proba_all_herds.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Predicted probabilities of infection}
+\framesubtitle{Posterior distributions for 4 herds}
+\centering
+\includegraphics[width=.72\textwidth]{imgs/plot_predicted_proba_4herds.pdf}
+\end{frame}
+
+\begin{frame}
+\frametitle{Take home}
+ \begin{itemize}
+  \item{The \texttt{STOC free} model predicts herd-level probabilities of infection from longitudinal surveillance data}
+  \item<2->{Estimation / prediction in a Bayesian framework:}
+  \begin{itemize}
+   \item{allows the incorporation of available knowledge on test characteristics and disease epidemiology in a straightforward way using prior distributions}
+   \item{the Stan implementation converges much better than the JAGS implementation}
+  \end{itemize}
+  \item<3->{Further work:}
+  \begin{itemize}
+   \item{Categorise herds into infection free / not free from the predicted posterior distributions of infection}
+   \item{How to define prior distributions for herd-level test characteristics?}
+  \end{itemize}
+  \item<4->{All code and documentation available on Github}
+  \begin{itemize}
+   \item{R package, submitted paper, this presentation and a tutorial}
+   \item[$\Rightarrow$]{please use and improve $\ldots$}
+  \end{itemize}
+ \end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Take home}
+\begin{itemize}
+  \item{All code and documentation available on Github}
+  \begin{itemize}
+   \item{R package: \url{https://github.com/AurMad/STOCfree}}
+   \item{Submitted paper: \url{https://www.biorxiv.org/content/10.1101/2020.07.10.197426v4}}
+   \item{This presentation and a tutorial: \url{https://github.com/AurMad/STOCfree_model_tutorial}}
+  \end{itemize}
+   \item[$\Rightarrow$]{please use and improve !}
+ \end{itemize}
 \end{frame}
 
 {
